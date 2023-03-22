@@ -1,0 +1,13 @@
+sample	condition	type
+A1	A	single-read
+A2	A	single-read
+A3	A	single-read
+A4	A	single-read
+B1	BC	single-read
+B2	BC	single-read
+B3	BC	single-read
+B4	BC	single-read
+C1	BC	single-read
+C2	BC	single-read
+C3	BC	single-read
+C4	BC	single-read
