@@ -1,0 +1,487 @@
+---
+title: "DaYoung"
+author: "Heesoo Song"
+date: '2022 6 8 '
+output: html_document
+---
+
+# 0. Load dataset
+```{r}
+# LCM <- read.csv("C:/Users/pc/Desktop/Dayohari/Genelist_filtered_LCM.csv")
+# MF <- read.csv("C:/Users/pc/Desktop/Dayohari/Genelist_filtered_MF.csv")
+# 
+# colnames(LCM)[1] <- "NCBI_GeneID_pig"
+# colnames(MF)[1] <- "NCBI_GeneID_pig"
+# 
+# rownames(LCM) <- NULL
+# rownames(MF) <- NULL
+# 
+# head(LCM)
+```
+
+```{r}
+LCM <- read.csv("C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/LCM/WithPig4_switchAB/files_3_groups/DeSeq2_Full_Table_nozeroexpression.tsv",sep="\t")
+MF <- read.csv("C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/MF/files_3_groups/DeSeq2_Full_Table_nozeroexpression.tsv",sep="\t")
+```
+
+
+# 1. PCA analysis
+See the dissimilarity between samples
+```{r}
+library(tidyverse)
+# Prepare matrix for pca analysis
+
+samples <- c("A1", "A2", "A3","A4","B1","B2","B3","B4","C1","C2","C3","C4")
+#samples_nopig4 <- c("A1", "A2", "A3","B1","B2","B3","C1","C2","C3")
+
+pca_matrix_MF <- MF[,c("Ensembl_GeneID_pig",samples)] %>% 
+  column_to_rownames("Ensembl_GeneID_pig") %>%
+  as.matrix()
+colnames(pca_matrix_MF) <- paste0(colnames(pca_matrix_MF), "_MF")
+
+pca_matrix_LCM <- LCM[,c("Ensembl_GeneID_pig",samples_nopig4)] %>% 
+  column_to_rownames("Ensembl_GeneID_pig") %>%
+  as.matrix() 
+colnames(pca_matrix_LCM) <- paste0(colnames(pca_matrix_LCM), "_LCM")
+
+pca_matrix_both <- merge(x = pca_matrix_MF, y = pca_matrix_LCM, by = 0) %>% column_to_rownames(var = "Row.names")
+```
+
+```{r}
+# Perform pca analysis
+pca_MF <- prcomp(t(pca_matrix_MF))
+pca_LCM <- prcomp(t(pca_matrix_LCM))
+pca_both <- prcomp(t(pca_matrix_both))
+```
+
+```{r}
+# PCA scores
+pc_scores_LCM <- pca_LCM$x
+pc_scores_MF <- pca_MF$x
+pc_scores_both <- pca_both$x
+
+head(pc_scores_MF)
+```
+
+```{r}
+pc_scores_LCM <- pc_scores_LCM %>% as_tibble(rownames = "sample")
+pc_scores_MF <- pc_scores_MF %>% as_tibble(rownames = "sample")
+pc_scores_both <- pc_scores_both %>% as_tibble(rownames = "sample")
+```
+
+```{r}
+# Plot pca
+library(ggplot2)
+pc_scores_LCM %>% 
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_text(aes(label = sample)) +
+  labs(title = "LCM")
+
+pc_scores_MF %>% 
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_text(aes(label = sample)) +
+  labs(title = "MF")
+
+pc_scores_both %>% 
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_text(aes(label = sample)) +
+  labs(title = "MF & LCM")
+```
+
+# 2. Heatmap
+```{r}
+library(pheatmap)
+library(tibble)
+```
+
+
+## 2-1. MarkerDB
+```{r message = FALSE}
+marker_DB <- read.table(file = "C:/Users/pc/Desktop/Dayohari/PanglaoDB_markers_27_Mar_2020.tsv", sep = "\t")
+colnames(marker_DB) <- marker_DB[1,]
+marker_DB <- marker_DB[2:dim(marker_DB)[1],]
+head(marker_DB)
+```
+```{r}
+# Filter only human genes
+marker_DB <- marker_DB[which(marker_DB$species %in% c("Mm Hs", "Hs")),]
+
+# Filter cell types
+genes_endothelial <- marker_DB[which(marker_DB$`cell type` == "Endothelial cells"), "official gene symbol"]
+genes_macrophages <- marker_DB[which(marker_DB$`cell type` == "Macrophages"), "official gene symbol"]
+genes_dendritic <- marker_DB[which(marker_DB$`cell type` == "Dendritic cells"), "official gene symbol"]
+
+# Create list that contain all these info
+marker_list <- list(Endothelial = genes_endothelial, Macrophages = genes_macrophages, Dendritic = genes_dendritic)
+```
+
+
+### 2-1-1. Find out canonical marker genes
+```{r}
+marker_epithelial <- data.frame(row.names = genes_epithelial, celltype = rep("Epithelial", length(genes_epithelial)))
+#marker_antigen <- as.data.frame(row.names = c(), celltype = rep("Antigen",))
+#marker_Myeloid <- as.data.frame(row.names = c(), celltype = rep("Myeloid",))
+marker_endothelial <- data.frame(row.names = genes_endothelial, celltype = rep("Endothelial",length(genes_endothelial)))
+marker_macrophages <- data.frame(row.names = genes_macrophages, celltype = rep("Macrophages",length(genes_macrophages)))
+marker_dendritic <- data.frame(row.names = genes_dendritic, celltype = rep("Dendritic",length(genes_dendritic)))
+
+annotation_col <- rbind(marker_endothelial, marker_macrophages, marker_dendritic)
+
+#for (i in 1:length(marker_list)){
+  i = 2
+  genes <- marker_list[[i]]
+  
+  # Extract marker gene expression data 
+  heatmap_df_prep_MF <- MF[which(MF$geneName_human %in% unique(genes)),c("geneName_human", samples)]
+  heatmap_df_prep_LCM <- LCM[which(LCM$geneName_human %in% unique(genes)),c("geneName_human", samples)]
+
+  # merge cell type
+  heatmap_df_prep_MF <- merge(heatmap_df_prep_MF, annotation_col, all.x = TRUE, by.x = "geneName_human", by.y = 0)
+  heatmap_df_prep_LCM <- merge(heatmap_df_prep_LCM, annotation_col, all.x = TRUE, by.x = "geneName_human", by.y = 0)
+
+  # Remove rows with duplicated gene name
+  heatmap_df_prep_MF <- heatmap_df_prep_MF[!duplicated(heatmap_df_prep_MF$geneName_human),]
+  heatmap_df_prep_LCM <- heatmap_df_prep_LCM[!duplicated(heatmap_df_prep_LCM$geneName_human),]
+
+  # gene names into row names
+  rownames(heatmap_df_prep_MF) <- heatmap_df_prep_MF$geneName_human
+  #heatmap_df_prep_MF[,samples] <- log(heatmap_df_prep_MF[,samples])
+  rownames(heatmap_df_prep_LCM) <- heatmap_df_prep_LCM$geneName_human
+  #heatmap_df_prep_LCM[,samples] <- log(heatmap_df_prep_LCM[,samples])
+  
+  # Order genes by cell type
+  heatmap_df_prep_MF <- heatmap_df_prep_MF[order(heatmap_df_prep_MF$celltype),]
+  heatmap_df_prep_LCM <- heatmap_df_prep_LCM[order(heatmap_df_prep_LCM$celltype),]
+  
+  # Transpose the matrix for heatmap
+  heatmap_df_MF <- t((heatmap_df_prep_MF[,samples]))
+  #heatmap_df_MF[is.infinite(heatmap_df_MF)] <- 0
+  heatmap_df_LCM <- t((heatmap_df_prep_LCM[,samples]))
+  #heatmap_df_LCM[is.infinite(heatmap_df_LCM)] <- 0
+  
+  pdf(paste0("Heatmap_",names(marker_list[i]),"_FACS.pdf"), width=12, height=7)
+  single_heatmap_MF <- pheatmap(heatmap_df_MF,
+                 cluster_rows = F,
+                 cluster_cols = T,
+                 annotation_legend = F,
+                 gaps_row = cumsum(c(4,4,4)),
+                 border_color = NA,
+                 fontsize = 10,
+                 fontsize_row = 10,
+                 fontsize_col = 5,
+                 height = 20,
+                 scale = "column",
+                 main = paste0("FACS - ",names(marker_list[i])))
+  
+  print(single_heatmap_MF)
+  dev.off()
+  
+  # Order columns of LCM plot as MF heatmap
+  MF_order <- single_heatmap_MF$tree_col$labels[single_heatmap_MF$tree_col$order]
+  remove_diff_gene <- setdiff(MF_order, colnames(heatmap_df_LCM))
+  MF_order <- MF_order[!MF_order %in% remove_diff_gene]
+  
+  heatmap_df_LCM <- heatmap_df_LCM[,MF_order]
+  
+  pdf(paste0("Heatmap_",names(marker_list[i]),"_LCM.pdf"), width=12, height=7)
+  single_heatmap_LCM <- pheatmap(heatmap_df_LCM,
+                 cluster_rows = F,
+                 cluster_cols = T,
+                 annotation_legend = F,
+                 gaps_row = cumsum(c(4,4,4)),
+                 border_color = NA,
+                 fontsize = 10,
+                 fontsize_row = 10,
+                 fontsize_col = 5,
+                 height = 20,
+                 scale = "column",
+                 main = paste0("LCM - ",names(marker_list[i])))
+  
+  print(single_heatmap_LCM)
+  dev.off()
+
+```
+
+
+### 2-1-2. Combined Figure
+```{r}
+marker_epithelial <- data.frame(row.names = c("FZD6","TSPAN1","OCLN","IL1R1","CDH1","MECOM","KRT7","PIGR","F5","GABRP"), celltype = rep("Epithelial", 10))
+#marker_antigen <- as.data.frame(row.names = c(), celltype = rep("Antigen",))
+#marker_Myeloid <- as.data.frame(row.names = c(), celltype = rep("Myeloid",))
+marker_endothelial <- data.frame(row.names = c("ESM1","CLEC14A","DLL4","ADGRL4","VWF","PTBRB","SPNS2","GJA4","VEGFC","CD34"), celltype = rep("Endothelial",10))
+marker_macrophages <- data.frame(row.names = c("ITGAL","CD200R1","SCIMP","ADGRE1","UCP2","PPARG","RAB20","CYBB","TLR4","FGR"), celltype = rep("Macrophages",10))
+marker_dendritic <- data.frame(row.names = c("CX3CR1","NR4A3","FLT3","NAPSA","CD1A","VCAN","CCL17","CCR2","S100A4","CD14"), celltype = rep("Dendritic",10))
+
+annotation_col <- rbind(marker_epithelial, marker_endothelial, marker_macrophages, marker_dendritic)
+#rownames(annotation_row_MF) <- samples
+```
+
+**MF**
+```{r}
+heatmap_df_prep_MF <- MF[which(MF$geneName_human %in% rownames(annotation_col)),c("geneName_human", samples)]
+heatmap_df_prep_MF <- merge(heatmap_df_prep_MF, annotation_col, all.x = TRUE, by.x = "geneName_human", by.y = 0)
+heatmap_df_prep_MF <- heatmap_df_prep_MF[!duplicated(heatmap_df_prep_MF$geneName_human),]
+rownames(heatmap_df_prep_MF) <- heatmap_df_prep_MF$geneName_human
+heatmap_df_prep_MF[,samples] <- log(heatmap_df_prep_MF[,samples])
+heatmap_df_prep_MF <- heatmap_df_prep_MF[order(heatmap_df_prep_MF$celltype),]
+heatmap_df_MF <- t(heatmap_df_prep_MF[,samples])
+heatmap_df_MF[is.infinite(heatmap_df_MF)] <- 0
+head(heatmap_df_MF)
+```
+
+```{r}
+pheatmap(heatmap_df_MF,
+         annotation_col = annotation_col,
+         cluster_rows = F,
+         cluster_cols = F,
+         annotation_legend = F,
+         gaps_row = cumsum(c(4,4,4)),
+         gaps_col = cumsum(as.vector(table(heatmap_df_prep_MF$celltype))),
+         border_color = NA,
+         fontsize = 10,
+         fontsize_row = 10,
+         height = 20,
+         scale = "column",
+         main = paste0("MF - Canonical Marker gene Expression"))
+
+grid.text(levels(factor(annotation_col$celltype)), x=c(0.11,0.32,0.53,0.75),y=c(0.925,0.925,0.925,0.925), gp=gpar(fontsize=10))
+```
+
+
+**LCM**
+```{r}
+heatmap_df_prep_LCM <- LCM[which(LCM$geneName_human %in% rownames(annotation_col)),c("geneName_human", samples)]
+heatmap_df_prep_LCM <- merge(heatmap_df_prep_LCM, annotation_col, all.x = TRUE, by.x = "geneName_human", by.y = 0)
+heatmap_df_prep_LCM <- heatmap_df_prep_LCM[!duplicated(heatmap_df_prep_LCM$geneName_human),]
+rownames(heatmap_df_prep_LCM) <- heatmap_df_prep_LCM$geneName_human
+heatmap_df_prep_LCM[,samples] <- log(heatmap_df_prep_LCM[,samples])
+heatmap_df_prep_LCM <- heatmap_df_prep_LCM[order(heatmap_df_prep_LCM$celltype),]
+heatmap_df_LCM <- t(heatmap_df_prep_LCM[,samples])
+heatmap_df_LCM[is.infinite(heatmap_df_LCM)] <- 0
+```
+
+```{r}
+pheatmap(heatmap_df_LCM,
+         annotation_col = annotation_col,
+         cluster_rows = F,
+         cluster_cols = F,
+         annotation_legend = F,
+         gaps_row = cumsum(c(4,4,4)),
+         gaps_col = cumsum(as.vector(table(heatmap_df_prep_LCM$celltype))),
+         border_color = NA,
+         fontsize = 10,
+         fontsize_row = 10,
+         height = 20,
+         scale = "column",
+         main = paste0("LCM - Canonical Marker gene Expression"))
+
+grid.text(levels(factor(annotation_col$celltype)), x=c(0.11,0.32,0.53,0.75),y=c(0.925,0.925,0.925,0.925), gp=gpar(fontsize=10))
+```
+
+
+
+## 2-2. Dayoung's selected marker genes
+```{r}
+marker_genes <- read.csv("C:/Users/pc/Desktop/Dayohari/cell_type_signature_gene_list.csv")
+colnames(marker_genes) <- marker_genes[1,]
+marker_genes <- marker_genes[2:dim(marker_genes)[1],]
+head(marker_genes)
+```
+
+```{r}
+table(marker_genes$`Cell type`)
+```
+
+
+```{r}
+# marker_epithelial <- data.frame(row.names = c("FZD6","TSPAN1","OCLN","IL1R1","CDH1","MECOM","KRT7","PIGR","F5","GABRP"), celltype = rep("Epithelial", 10))
+# #marker_antigen <- as.data.frame(row.names = c(), celltype = rep("Antigen",))
+# #marker_Myeloid <- as.data.frame(row.names = c(), celltype = rep("Myeloid",))
+# marker_endothelial <- data.frame(row.names = c("ESM1","CLEC14A","DLL4","ADGRL4","VWF","PTBRB","SPNS2","GJA4","VEGFC","CD34"), celltype = rep("Endothelial",10))
+# marker_macrophages <- data.frame(row.names = c("ITGAL","CD200R1","SCIMP","ADGRE1","UCP2","PPARG","RAB20","CYBB","TLR4","FGR"), celltype = rep("Macrophages",10))
+# marker_dendritic <- data.frame(row.names = c("CX3CR1","NR4A3","FLT3","NAPSA","CD1A","VCAN","CCL17","CCR2","S100A4","CD14"), celltype = rep("Dendritic",10))
+# #marker_antigen <- as.data.frame(row.names = c(), celltype = rep("Antigen",))
+# #marker_Myeloid <- as.data.frame(row.names = c(), celltype = rep("Myeloid",))
+
+#annotation_col <- rbind(marker_epithelial, marker_endothelial, marker_macrophages, marker_dendritic)
+
+annotation_col <- data.frame(row.names = paste0(marker_genes$geneName_human, "_", marker_genes$`Cell type`), genename = marker_genes$geneName_human, celltype = marker_genes$`Cell type`)
+```
+
+**MF**
+```{r}
+heatmap_df_prep_MF <- MF[which(MF$geneName_human %in% annotation_col$genename),c("geneName_human", samples)]
+heatmap_df_prep_MF <- merge(heatmap_df_prep_MF, annotation_col, all.x = TRUE, by.x = "geneName_human", by.y = "genename")
+heatmap_df_prep_MF <- heatmap_df_prep_MF[!duplicated(heatmap_df_prep_MF$geneName_human),]
+rownames(heatmap_df_prep_MF) <- paste0(heatmap_df_prep_MF$geneName_human, "_", heatmap_df_prep_MF$celltype)
+heatmap_df_prep_MF[,samples] <- log(heatmap_df_prep_MF[,samples])
+heatmap_df_prep_MF <- heatmap_df_prep_MF[order(heatmap_df_prep_MF$celltype),]
+heatmap_df_MF <- t(heatmap_df_prep_MF[,samples])
+heatmap_df_MF[is.infinite(heatmap_df_MF)] <- 0
+head(heatmap_df_MF)
+```
+
+
+```{r}
+pdf("Heatmap_MF_DYgenelist.pdf", width=12, height=7)
+
+pheatmap(heatmap_df_MF,
+         annotation_col = annotation_col,
+         cluster_rows = F,
+         cluster_cols = F,
+         annotation_legend = F,
+         gaps_row = cumsum(c(4,4,4)),
+         gaps_col = cumsum(as.vector(table(heatmap_df_prep_MF$celltype))),
+         border_color = NA,
+         fontsize = 10,
+         fontsize_row = 10,
+         height = 20,
+         scale = "column",
+         main = paste0("MF - Marker gene Expression"))
+
+#grid.text(levels(factor(annotation_col$celltype)), x=c(0.11,0.32,0.53,0.75),y=c(0.925,0.925,0.925,0.925), gp=gpar(fontsize=10))
+
+dev.off()
+```
+
+
+**LCM**
+```{r}
+heatmap_df_prep_LCM <- LCM[which(LCM$geneName_human %in% annotation_col$genename),c("geneName_human", samples_nopig4)]
+heatmap_df_prep_LCM <- merge(heatmap_df_prep_LCM, annotation_col, all.x = TRUE, by.x = "geneName_human", by.y = "genename")
+heatmap_df_prep_LCM <- heatmap_df_prep_LCM[!duplicated(heatmap_df_prep_LCM$geneName_human),]
+rownames(heatmap_df_prep_LCM) <- paste0(heatmap_df_prep_LCM$geneName_human, "_", heatmap_df_prep_LCM$celltype)
+heatmap_df_prep_LCM[,samples_nopig4] <- log(heatmap_df_prep_LCM[,samples_nopig4])
+heatmap_df_prep_LCM <- heatmap_df_prep_LCM[order(heatmap_df_prep_LCM$celltype),]
+heatmap_df_LCM <- t(heatmap_df_prep_LCM[,samples_nopig4])
+heatmap_df_LCM[is.infinite(heatmap_df_LCM)] <- 0
+```
+
+```{r}
+pdf("Heatmap_LCM_DYgenelist.pdf", width=12, height=7)
+
+pheatmap(heatmap_df_LCM,
+         annotation_col = annotation_col,
+         cluster_rows = F,
+         cluster_cols = F,
+         annotation_legend = F,
+         gaps_row = cumsum(c(3,3,3)),
+         gaps_col = cumsum(as.vector(table(heatmap_df_prep_LCM$celltype))),
+         border_color = NA,
+         fontsize = 10,
+         fontsize_row = 10,
+         height = 20,
+         scale = "column",
+         main = paste0("LCM - Marker gene Expression"))
+
+#grid.text(levels(factor(annotation_col$celltype)), x=c(0.11,0.32,0.53,0.75),y=c(0.925,0.925,0.925,0.925), gp=gpar(fontsize=10))
+dev.off()
+```
+
+## 2-3. Macrophage marker heat map_new (09.11.2022)
+```{r}
+library(pheatmap)
+library(tibble)
+```
+
+```{r}
+LCM <- read.csv("C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/LCM/WithPig4_switchAB/files_3_groups/DeSeq2_Full_Table_nozeroexpression.tsv",sep="\t")
+MF <- read.csv("C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/MF/files_3_groups/DeSeq2_Full_Table_nozeroexpression.tsv",sep="\t")
+#MF <- read.csv("C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/MF/files_3_groups/DeSeq2_Full_Table_expressed_genes.csv")
+```
+
+```{r}
+marker_genes <- read.csv("C:/Users/pc/Desktop/Dayohari/List_of_macrophage_marker_panglaodb.csv")
+marker_genes <- marker_genes[,"Official.gene.symbol"]
+head(marker_genes)
+length(marker_genes)
+```
+
+**MF**
+```{r}
+samples <- c("A1", "A2", "A3","A4","B1","B2","B3","B4","C1","C2","C3","C4")
+
+heatmap_df_prep_MF <- MF[which(MF$geneName_human %in% marker_genes),c("Ensembl_GeneID_pig", "geneName_pig", "geneName_human", samples)]
+heatmap_df_prep_MF[,"Avg_A"] <- apply(heatmap_df_prep_MF[,c("A1", "A2", "A3","A4")], 1, mean)
+heatmap_df_prep_MF[,"Avg_B"] <- apply(heatmap_df_prep_MF[,c("B1","B2","B3","B4")], 1, mean)
+heatmap_df_prep_MF[,"Avg_C"] <- apply(heatmap_df_prep_MF[,c("C1","C2","C3","C4")], 1, mean)
+#heatmap_df_MF <- heatmap_df_prep_MF[, c("geneName_human", "Avg_A", "Avg_B", "Avg_C")]
+heatmap_df_prep_MF <- heatmap_df_prep_MF[, c("Ensembl_GeneID_pig", "geneName_pig", "geneName_human", "Avg_A", "Avg_B", "Avg_C")] %>% data.frame()
+# Remove orthologies assigned multiple times: IL1B, CLEC4D, CD68, CD200R1
+heatmap_df_MF <- heatmap_df_prep_MF[!(heatmap_df_prep_MF$Ensembl_GeneID_pig %in% c("ENSSSCG00000044512",
+"ENSSSCG00000008769","ENSSSCG00000037528","ENSSSCG00000008088","ENSSSCG00000033667","ENSSSCG00000036288","ENSSSCG00000039214")), c("geneName_human", "Avg_A", "Avg_B", "Avg_C")]
+rownames(heatmap_df_MF) <- heatmap_df_MF$geneName_human
+heatmap_df_MF <- heatmap_df_MF[,2:4]
+heatmap_df_MF <- log(heatmap_df_MF)
+heatmap_df_MF <- t(heatmap_df_MF)
+heatmap_df_MF[which(!is.finite(heatmap_df_MF))] <- 0
+
+```
+
+
+```{r}
+pdf("Heatmap_MacrophageMarker_new_FACS.pdf", width=12, height=7)
+
+pheatmap(heatmap_df_MF,
+         #annotation_col = annotation_col,
+         labels_row = c("NaSn-", "NaSn+", "LuSn+"),
+         cluster_rows = F,
+         cluster_cols = T,
+         annotation_legend = F,
+         border_color = NA,
+         fontsize = 20,
+         fontsize_row = 20,
+         fontsize_col = 7,
+         height = 20,
+         #scale = "row",
+         treeheight_col = 0,
+         main = paste0("FACS - Macrophage Marker"))
+
+#grid.text(levels(factor(annotation_col$celltype)), x=c(0.11,0.32,0.53,0.75),y=c(0.925,0.925,0.925,0.925), gp=gpar(fontsize=10))
+
+dev.off()
+```
+
+
+**LCM**
+```{r}
+heatmap_df_prep_LCM <- LCM[which(LCM$geneName_human %in% marker_genes),c("Ensembl_GeneID_pig", "geneName_pig", "geneName_human", samples)]
+heatmap_df_prep_LCM[,"Avg_A"] <- apply(heatmap_df_prep_LCM[,c("A1", "A2", "A3","A4")], 1, mean)
+heatmap_df_prep_LCM[,"Avg_B"] <- apply(heatmap_df_prep_LCM[,c("B1","B2","B3","B4")], 1, mean)
+heatmap_df_prep_LCM[,"Avg_C"] <- apply(heatmap_df_prep_LCM[,c("C1","C2","C3","C4")], 1, mean)
+
+heatmap_df_prep_LCM <- heatmap_df_prep_LCM[, c("Ensembl_GeneID_pig", "geneName_pig", "geneName_human", "Avg_A", "Avg_B", "Avg_C")] %>% data.frame()
+# Remove orthologies assigned multiple times: IL1B, CLEC4D, CD68, CD200R1
+heatmap_df_LCM <- heatmap_df_prep_LCM[!(heatmap_df_prep_LCM$Ensembl_GeneID_pig %in% c("ENSSSCG00000044512",
+"ENSSSCG00000008769","ENSSSCG00000037528","ENSSSCG00000008088","ENSSSCG00000033667", "ENSSSCG00000034182", "ENSSSCG00000036288","ENSSSCG00000039214")), c("geneName_human", "Avg_A", "Avg_B", "Avg_C")]
+rownames(heatmap_df_LCM) <- heatmap_df_LCM$geneName_human
+heatmap_df_LCM <- heatmap_df_LCM[,2:4]
+heatmap_df_LCM <- log(heatmap_df_LCM)
+heatmap_df_LCM <- t(heatmap_df_LCM)
+heatmap_df_LCM[which(!is.finite(heatmap_df_LCM))] <- 0
+
+```
+
+
+```{r}
+pdf("Heatmap_MacrophageMarker_new_LCM.pdf", width=12, height=7)
+
+pheatmap(heatmap_df_LCM,
+         #annotation_col = annotation_col,
+         labels_row = c("NaSn-", "NaSn+", "LuSn+"),
+         cluster_rows = F,
+         cluster_cols = T,
+         annotation_legend = F,
+         border_color = NA,
+         fontsize = 20,
+         fontsize_row = 20,
+         fontsize_col = 7,
+         height = 20,
+         #scale = "row",
+         treeheight_col = 0,
+         main = paste0("LCM - Macrophage Marker"))
+
+#grid.text(levels(factor(annotation_col$celltype)), x=c(0.11,0.32,0.53,0.75),y=c(0.925,0.925,0.925,0.925), gp=gpar(fontsize=10))
+
+dev.off()
+```
