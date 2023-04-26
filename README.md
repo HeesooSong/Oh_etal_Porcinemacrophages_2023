@@ -53,7 +53,7 @@ D.O. and H.J.N. designed the project. D.O. designed and performed tissue isolati
 <!-- CONTACT -->
 ## Contact
 
-DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) -  Dayoung.Oh@UGent.be
+DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) -  Dayoung.Oh@UGent.be    
 Heesoo Song - [LinkdIn](https://www.linkedin.com/in/heesoo-song-57a21a1b8/) - cleos0409@gmail.com    
 Sieglinde Coppens - [LinkdIn](https://www.linkedin.com/in/sieglinde-coppens/) - sieglinde.coppens@pathosense.com
 
