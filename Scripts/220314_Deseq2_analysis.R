@@ -1,15 +1,12 @@
 #### DeSeq2 analysis of RNAseq data 
 library(BiocManager)
-# BiocManager::install("DESeq2")
 library("DESeq2")
 library("dplyr")
 library("tibble")
 library(ggplot2)
-library(gplots)
 library(ggrepel)
 library(RColorBrewer)
-library(reshape)
-library(cowplot)
+library(reshape2)
 library(ggpubr)
 
 ########################################

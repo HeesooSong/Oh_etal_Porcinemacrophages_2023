@@ -1,6 +1,6 @@
 
-FACS <- read.csv(file = "C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/MF/files_3_groups/DeSeq2_Full_Table.csv")
-LCM <- read.csv(file = "C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/LCM/WithPig4_switchAB/files_3_groups/DeSeq2_Full_Table.csv")
+FACS <- read.csv(file = "C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/MF/files_3_groups/DeSeq2_Full_Table.tsv", sep = '\t')
+LCM <- read.csv(file = "C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/LCM/WithPig4_switchAB/files_3_groups/DeSeq2_Full_Table.tsv", sep = '\t')
 
 FACS$Avg_norm_A <- apply(FACS[,16:19], 1, mean)
 FACS$Avg_norm_B <- apply(FACS[,20:23], 1, mean)
