@@ -8,7 +8,7 @@ This is the R codes which were used to generate figures and conduct the downstre
 
 Macrophages  are key players in the immune response against viral infections in pigs. Recent research has identified different subsets of porcine nasal macrophages with varying levels of susceptibility to different strains of porcine reproductive and respiratory syndrome virus (PRRSV). Here, total RNA sequencing was performed on nasal macrophage subsets (NaSn- and NaSn+) and lung macrophages (LuSn+), isolated by FACS or LCM  with immunofluorescence staining. The results revealed the transcriptomic profile of nasal macrophages was distinct from that of lung macrophages. Further analysis identified differentially expressed genes in the two subsets of nasal macrophages, and cell type signature analysis from LCM-RNAseq revealed microenvironment-related features, indicating their adaptation to neighboring cells and extracellular matrix and their different roles in interacting with pathogens and immune responses. Our study enhances the understanding of macrophage subsets and the nasal immunity in pigs and provides advanced strategies for targeting specific macrophage subsets critical in the immune response against viruses, improving treatment of viral infections in pigs.
 
-![Workflow Screen Shot](https://github.com/HeesooSong/UNIST_internship/blob/master/sources/Workflow_1.png?raw=true)
+![Graphical Abstract](https://github.com/HeesooSong/PorcineMOsubsets-FACS-LCM-RNASeq/blob/main/Source/Graphical_Abstract.png?raw=true)
 
 
 ## Data Analysis & Visualization
@@ -51,7 +51,7 @@ D.O. and H.J.N. designed the project. D.O. designed and performed tissue isolati
 <!-- CONTACT -->
 ## Contact
 
-DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) - 
+DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) -  
 Heesoo Song - [LinkdIn](https://www.linkedin.com/in/heesoo-song-57a21a1b8/) - cleos0409@gmail.com
 
 
