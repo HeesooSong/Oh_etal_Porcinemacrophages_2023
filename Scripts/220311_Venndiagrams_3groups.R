@@ -8,7 +8,7 @@ font_import()
 loadfonts(device = "win")
 #fonts()
 
-myCol <- brewer.pal(3, "Set2")
+myCol <- c("#FC8D62", "#66C2A5", "#8DA0CB")
 myCol_DEG <- c("#D39200", "#DB72FB", "#00798C")
 
 venndiagram_path <- "C:/Users/pc/Desktop/Dayohari/220615_DEA_Dayoung_ToSend/Venndiagrams_LCMswitchAB/"
@@ -43,14 +43,13 @@ present_genes_lung_LCM <- df_present_genes_lung_LCM$V1
 
 venn.diagram(
   x = list(present_genes_nose1_LCM, present_genes_nose2_LCM, present_genes_lung_LCM),
-  category.names = c(expression("NaSn"^"low"), expression("NaSn"^"mid"), expression("LuSn"^"high")),
-  filename = paste(venndiagram_path, "LCM_presenceabsence_3groups.png", sep=""),
-  imagetype = "png",
+  category.names = c(expression("NaSn"^"-"), expression("NaSn"^"+"), expression("LuSn"^"+")),
+  filename = paste(venndiagram_path, "LCM_presenceabsence_3groups.tif", sep=""),
+  imagetype = "tiff",
   output=TRUE,
   print.mode = c("raw", "percent"),
   margin = 0.07,
   
-  main = "LCM: Boolean",
   main.fontfamily = "Arial",
   main.cex = 1.5,
   lwd = 2,
@@ -58,13 +57,13 @@ venn.diagram(
   fill = myCol,
   
   # Numbers
-  cex = 1.5,
+  cex = 1.7,
   fontface = "bold",
   fontfamily = "Arial",
   cat.col = myCol,
   cat.fontfamily = "Arial",
   cat.cex = 2.5,
-  cat.just=list(c(0.3,0) , c(0.7,0) , c(0.5,0))
+  cat.just=list(c(0.3,0) , c(0.7,0) , c(0.5,0.2))
 )
 
 ###############################################################################
@@ -86,14 +85,13 @@ present_genes_lung_MF <- df_present_genes_lung_MF$V1
 
 venn.diagram(
   x = list(present_genes_nose1_MF, present_genes_nose2_MF, present_genes_lung_MF),
-  category.names = c(expression("NaSn"^"low"), expression("NaSn"^"mid"), expression("LuSn"^"high")),
-  filename = paste(venndiagram_path, "MF_presenceabsence_3groups.png", sep=""),
-  imagetype = "png",
+  category.names = c(expression("NaSn"^"-"), expression("NaSn"^"+"), expression("LuSn"^"+")),
+  filename = paste(venndiagram_path, "MF_presenceabsence_3groups.tif", sep=""),
+  imagetype = "tiff",
   output=TRUE,
   print.mode = c("raw", "percent"),
   margin = 0.07,
   
-  main = "MF: Boolean",
   main.fontfamily = "Arial",
   main.cex = 1.5,
   lwd = 2,
@@ -101,13 +99,13 @@ venn.diagram(
   fill = myCol,
   
   # Numbers
-  cex = 1.5,
+  cex = 1.7,
   fontface = "bold",
   fontfamily = "Arial",
   cat.col = myCol,
   cat.fontfamily = "Arial",
   cat.cex = 2.5,
-  cat.just=list(c(0.3,0) , c(0.7,0) , c(0.5,0))
+  cat.just=list(c(0.3,0) , c(0.7,0) , c(0.5,0.2))
 )
 
 
@@ -144,9 +142,9 @@ DEG_CvsB_LCM <- df_DEG_CvsB_LCM$geneName_pig
 
 venn_DEG <- venn.diagram(
   x = list(DEG_BvsA_LCM, DEG_CvsA_LCM, DEG_CvsB_LCM),
-  category.names = c(expression("NaSn"^"low"*"vsNaSn"^"mid"), expression("LuSn"^"high"*"vsNaSn"^"low"), expression("LuSn"^"high"*"vsNaSn"^"mid")),
-  filename = paste(venndiagram_path, "LCM_DEG_3groups.png", sep=""),
-  imagetype = "png",
+  category.names = c(expression("NaSn"^"-"*" vs NaSn"^"+"), expression("LuSn"^"+"*" vs NaSn"^"-"), expression("LuSn"^"+"*" vs NaSn"^"+")),
+  filename = paste(venndiagram_path, "LCM_DEG_3groups.tif", sep=""),
+  imagetype = "tiff",
   output=TRUE,
   margin = 0.07,
 
@@ -164,7 +162,7 @@ venn_DEG <- venn.diagram(
   cat.col = myCol_DEG,
   cat.fontfamily = "Arial",
   cat.cex = 2,
-  cat.just=list(c(0.3,0) , c(0.7,0) , c(0.5,0))
+  cat.just=list(c(0.3,-0.3) , c(0.7,-0.3) , c(0.5,0.25))
   
 )
 
@@ -240,9 +238,9 @@ DEG_CvsB_MF <- df_DEG_CvsB_MF$geneName_pig
 
 venn_DEG <- venn.diagram(
   x = list(DEG_BvsA_MF, DEG_CvsA_MF, DEG_CvsB_MF),
-  category.names = c(expression("NaSn"^"low"*"vsNaSn"^"mid"), expression("LuSn"^"high"*"vsNaSn"^"low"), expression("LuSn"^"high"*"vsNaSn"^"mid")),
-  filename = paste(venndiagram_path, "MF_DEG_3groups.png", sep=""),
-  imagetype = "png",
+  category.names = c(expression("NaSn"^"-"*" vs NaSn"^"+"), expression("LuSn"^"+"*" vs NaSn"^"-"), expression("LuSn"^"+"*" vs NaSn"^"+")),
+  filename = paste(venndiagram_path, "MF_DEG_3groups.tif", sep=""),
+  imagetype = "tiff",
   output=TRUE,
   margin = 0.07,
 
@@ -260,7 +258,7 @@ venn_DEG <- venn.diagram(
   cat.col = myCol_DEG,
   cat.fontfamily = "Arial",
   cat.cex = 2,
-  cat.just=list(c(0.3,0) , c(0.7,0) , c(0.5,0))
+  cat.just=list(c(0.3,-0.3) , c(0.7,-0.3) , c(0.5,0.25))
   
 )
 
