@@ -1,0 +1,44 @@
+﻿method,category,CellType,content,NES
+FACS,Goterms,NaSn-,GOBP: Neutrophil mediated immunity,1.87
+FACS,Goterms,NaSn-,GOBP: Regulation of T cell activation,1.79
+FACS,Goterms,NaSn-,GOMF: Cytokine receptor activity,1.82
+FACS,Goterms,NaSn+,GOBP: Transport of virus,1.83
+FACS,Goterms,NaSn+,GOBP: Regulation of humoral immune response,1.78
+FACS,Goterms,NaSn+,GOMF: Scavenger receptor activity,1.56
+FACS,Goterms,LuSn+,GOBP: Respiratory electron transport chain,2.99
+FACS,Goterms,LuSn+,GOBP: Oxidative phosphorylation,2.95
+FACS,Goterms,LuSn+,GOMF: Oxidoreductase activity,2.6
+FACS,KEGG,NaSn-,Fc-gammaR mediated phagocytosis,1.82
+FACS,KEGG,NaSn-,Toll-like receptor signaling pathway,1.78
+FACS,KEGG,NaSn+,Glycosaminoglycan degradation,2.46
+FACS,KEGG,NaSn+,Complement and coagulation cascades,2.18
+FACS,KEGG,LuSn+,Oxidative phosphorylation,2.84
+FACS,KEGG,LuSn+,Peroxisome,2.38
+FACS,CTSA,NaSn-,Adult olfactory neuroepithelium dendritic cells,1.99
+FACS,CTSA,NaSn-,Fetal antigen presenting cells,1.88
+FACS,CTSA,NaSn+,Fetal pancreas vascular endothelial cells,2.94
+FACS,CTSA,NaSn+,Fetal vascular endothelial cells,2.54
+FACS,CTSA,LuSn+,Lung proliferating NKT cells,2.75
+FACS,CTSA,LuSn+,Lung macrophage cells,2.59
+LCM,Goterms,NaSn-,GOBP: Axoneme assembly,2.28
+LCM,Goterms,NaSn-,GOBP: Epidermis development,2.08
+LCM,Goterms,NaSn-,GOMF: Cell adhesion mediator activity,1.99
+LCM,Goterms,NaSn+,GOBP: Collagen fibril organization,2.38
+LCM,Goterms,NaSn+,GOMF: Pattern recognition receptor activity,1.85
+LCM,Goterms,NaSn+,GOMF: Extracellular matrix structural constituent,1.71
+LCM,Goterms,LuSn+,GOBP: Regulation of leukocyte degranulation,2.28
+LCM,Goterms,LuSn+,GOBP: Regulation of mast cell activation,2.13
+LCM,Goterms,LuSn+,GOMF: Pattern recognition receptor activity ,1.68
+LCM,KEGG,NaSn-,Metabolism of xenobiotics by cytochrome P450,1.93
+LCM,KEGG,NaSn-,Notch signaling pathway,1.67
+LCM,KEGG,NaSn+,Natural killer cell mediated cytotoxicity,1.14
+LCM,KEGG,NaSn+,TGF_beta signaling pathway,1.07
+LCM,KEGG,LuSn+,Antigen processing and presentation,1.41
+LCM,KEGG,LuSn+,PPAR signaling pathway,1.36
+LCM,CTSA,NaSn-,Fetal stomach squamous epithelial cells,2.67
+LCM,CTSA,NaSn-,Lung differentiating basal cells,2.37
+LCM,CTSA,NaSn+,Developing heart C3 fibroblast-like cells,2.67
+LCM,CTSA,NaSn+,"Adult olfactory 
+neuroepithelium vascular smooth muscle cells",2.48
+LCM,CTSA,LuSn+,Liver C18 NKT cells,2.81
+LCM,CTSA,LuSn+,Lung macrophage cells,2.62

@@ -1,0 +1,13 @@
+sample	condition	type
+A1	A_NasalSnNeg	single-read
+A2	A_NasalSnNeg	single-read
+A3	A_NasalSnNeg	single-read
+A4	A_NasalSnNeg	single-read
+B1	B_NasalSnPos	single-read
+B2	B_NasalSnPos	single-read
+B3	B_NasalSnPos	single-read
+B4	B_NasalSnPos	single-read
+C1	C_LungSnPos	single-read
+C2	C_LungSnPos	single-read
+C3	C_LungSnPos	single-read
+C4	C_LungSnPos	single-read
