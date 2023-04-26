@@ -28,10 +28,12 @@ All data analysis and visalizations can be reproduced from the scripts and data 
     ```{r}
     DESeq2
     dplyr
+    edgeR
     extrafont
     ggplot2
     ggpubr
     ggrepel
+    limma
     RColorBrewer
     remotes
     reshape2
@@ -51,8 +53,9 @@ D.O. and H.J.N. designed the project. D.O. designed and performed tissue isolati
 <!-- CONTACT -->
 ## Contact
 
-DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) -  
-Heesoo Song - [LinkdIn](https://www.linkedin.com/in/heesoo-song-57a21a1b8/) - cleos0409@gmail.com
+DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) -  Dayoung.Oh@UGent.be
+Heesoo Song - [LinkdIn](https://www.linkedin.com/in/heesoo-song-57a21a1b8/) - cleos0409@gmail.com    
+Sieglinde Coppens - [LinkdIn](https://www.linkedin.com/in/sieglinde-coppens/) - sieglinde.coppens@pathosense.com
 
 
 <!-- ACKNOWLEDGMENTS-->
