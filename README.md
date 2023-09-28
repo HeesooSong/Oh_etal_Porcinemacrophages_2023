@@ -1,6 +1,7 @@
 # Multi-angled transcriptome analyses reveal chameleon-like behavior of macrophages in the porcine respiratory tract
-This is the R codes which were used to generate figures and conduct the downstream analysis in our manuscript, “Multi-angled transcriptome analyses reveal chameleon-like behavior of macrophages in the porcine respiratory tract”
+This is the R codes which were used to generate figures and conduct the downstream analysis in our manuscript, “Multi-angled transcriptome analyses reveal chameleon-like behavior of macrophages in the porcine respiratory tract”. _Under revision in Frontiers in Immunology_
 
+Dayoung Oh, Nick Vereecke, Wim Trypsteen, Heesoo Song, Ward De Spiegelaere, Bert Devriendt, Sieglinde Coppens, Jo Vandesompele, Hans J. Nauwynck
 
 
 <!-- ABOUT THE PROJECT -->
