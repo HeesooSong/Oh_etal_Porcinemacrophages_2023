@@ -1,5 +1,5 @@
-# PorcineMOsubsets-FACS-LCM-RNASeq
-This is the R codes which were used to generate figures and conduct the downstream analysis in our manuscript, “Porcine nasal and lung macrophage subsets isolated by FACS and LCM show different transcriptomic profiles depending on tissue origin and location”
+# Multi-angled transcriptome analyses reveal chameleon-like behavior of macrophages in the porcine respiratory tract
+This is the R codes which were used to generate figures and conduct the downstream analysis in our manuscript, “Multi-angled transcriptome analyses reveal chameleon-like behavior of macrophages in the porcine respiratory tract”
 
 
 
@@ -54,7 +54,7 @@ D.O. and H.J.N. designed the project. D.O. designed and performed tissue isolati
 ## Contact
 
 DaYoung Oh - [LinkdIn](https://www.linkedin.com/in/dayoung-oh-6053b6132/) -  Dayoung.Oh@UGent.be    
-Heesoo Song - [LinkdIn](https://www.linkedin.com/in/heesoo-song-57a21a1b8/) - cleos0409@gmail.com    
+Heesoo Song - [LinkdIn](https://www.linkedin.com/in/heesoosong/) - cleos0409@gmail.com    
 Sieglinde Coppens - [LinkdIn](https://www.linkedin.com/in/sieglinde-coppens/) - sieglinde.coppens@pathosense.com
 
 
